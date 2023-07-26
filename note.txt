@@ -1,0 +1,16 @@
+// GET, POST, PATCH, PUT, DELETE   = resquest methode
+
+CRUD = create read update DELETE
+create- comes with a request body and the request it used is 'POST'
+
+read - it used 'get' it could be getting all of single one it also need route params 'req.params'
+
+update- it used 'PATCH',  or PUT(its used for total overwrite)
+
+DELETE - 
+
+middlewares are fxn that run on the server btw req and res it written with app.use
+app.use
+next
+req----> middlewares <-----res
+
