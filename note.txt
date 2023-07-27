@@ -14,3 +14,163 @@ app.use
 next
 req----> middlewares <-----res
 
+
+
+
+
+
+
+ // GET, POST, PATCH, PUT, DELETE
+
+
+
+// app.get, app.delete, app.patch, app.put, app.set, app.listen
+
+mealRouter example
+const express = require("express");
+const router = express.Router();
+const meals = require("../data/meals");
+
+
+  //    // error route   always put it  last
+    //    app.all('*', (req, res) => {
+    //     res.status(404).render("error");
+    // });
+// 26-07-23
+router.use(express.json());       
+// get all meals
+router.get("/api/meals", (req, res) => {
+    res.status(200).json({numOfMeals: meals.length, meals})
+});
+
+// get single meal
+router.get("/api/meals/:mealId", (req, res) => {
+    // console.log(req.params.mealId);
+    const {mealId} = req.params;
+    
+    const meal = meals.find((meal) => meal.id === parseInt(mealId));
+
+    if (!meal) {
+        return res.status(404).json({
+            message: `Meal with the id ${mealId} not found`,
+            Success: false
+        });
+    }
+    res.status(200).json({sucess: true, meal})
+});
+
+
+// create a meal to create new meal you need the name of the meal
+router.post("/api/meals", (req, res) => {
+    // req.body
+    // console.log(req.body); 
+    const {name} = req.body
+    if (!name) {
+        return res.status(400).json({massage: "please provide a meal name"})
+    }
+    const newMeal = {id: 6, name};
+    res.status(201).json({sucess: true, meals:[...meals, newMeal] })
+
+});
+
+
+// updatte a memal
+
+router.patch("/api/meals/:mealId", (req, res) => {
+    const {mealId} = req.params;
+    const {name} = req.body
+
+    const meal = meals.find((meal) => meal.id === Number(mealId));
+    if(!meal){
+        return res.status(404).json({messabge: `meal with the id ${mealId} not found`})
+    }
+    if(!name){
+        return res.status(400).json({message: `Please provide a new meal name`})
+    }
+
+    const mealToBeUpdated = meals.map((meal) => {
+        if (meal.id === Number(mealId)){
+            meal.name = name;
+        }
+        return meal;
+    });
+    return res.status(200).json({success: true, meals: mealToBeUpdated});
+})
+
+
+ 
+// delete meal
+router.delete("/api/meals/:mealId", (req, res) =>{
+    const {mealId} = req.params;
+
+    const meal = meals.find((meal) => meal.id === Number(mealId));
+    if(!meal) {
+        return res.status(404).json({message: `meal with the id ${mealId} not found`});
+    }
+
+    const remainingMeals = meals.filter((meal) => meal.id !== parseInt(mealId));
+    res.status(200).json({successs: true, meals: remainingMeals});
+});
+
+// 26-07-23
+
+// middleware
+// router.use((req, res, next) => {
+//     console.log("request made");
+//     next();
+// });
+
+
+// // example of middleware
+// // 1
+// router.use((req, res, next) => {
+//     const requestInfo = {
+//         url: req.url,
+//         method: req.method,
+//         time: new Date().getDate(),
+//     };
+//     console.log(requestInfo);
+//     next();
+// });
+
+// // 2
+// const auth = (req, res, next) => {
+//     const authorized = false;
+//     if (authorized){
+//         next();
+//     } else {
+//         res.send("you are not authorized")
+//     };
+// };
+
+// router.get("/account", auth, (req, res) => {
+//     res.status(200).render("about")
+// })
+
+
+router.get("/", (req, res) => {
+    const user = 'John Doe'
+    const role = ' full stack engineer'
+    res.status(200).render("index", {user, role});
+})
+
+router.get("/about", (req, res) => {
+    res.status(200).render("about");
+});
+
+// normal ways of gettig app b4 render
+// app.get("/contact", (req, res) => {
+//     res.status(200).send("<h1>contact page<h1/>");
+// });
+
+
+        // redirecting
+router.get("/about-us", (req, res) => {
+    res.redirect("/about");
+});
+
+
+
+
+
+module.exports = router;
